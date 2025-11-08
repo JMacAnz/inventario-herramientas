@@ -71,7 +71,7 @@ const router = createRouter({
 });
 
 // 2. Navigation Guard (Protección de Rutas)
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, _from, next) => {
   // 1. Verificar sesión de autenticación
   const {
     data: { session },
