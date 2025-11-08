@@ -49,7 +49,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { supabase } from '../../lib/supabaseClient'; // Usamos el cliente estándar
+import { supabase } from '..//lib/supabaseClient'; // Usamos el cliente estándar
 
 const userData = ref({
     email: '',
