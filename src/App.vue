@@ -23,6 +23,11 @@
                                 <i class="bi bi-box-seam me-1"></i> Inventario
                             </router-link>
                         </li>
+                        <li class="nav-item">
+                            <router-link class="nav-link" active-class="active" to="/historial-movimientos">
+                                <i class="bi bi-clock-history me-1"></i> Historial de Movimientos
+                            </router-link>
+                        </li>
                         <!-- <li class="nav-item">
                             <router-link class="nav-link" active-class="active" to="/movimientos-pendientes">
                                 <i class="bi bi-clock-history me-1"></i> Pendientes
@@ -82,11 +87,11 @@ const checkAuthStatus = async () => {
         try {
             // Optimización: Si ya tenemos el rol, no lo consultamos de nuevo a menos que sea necesario.
             if (!userRole.value) { 
-                 const { data: profile, error } = await supabase
-                    .from('profiles')
-                    .select('rol')
-                    .eq('idUser', session.user.id)
-                    .single();
+                      const { data: profile, error } = await supabase
+                          .from('profiles')
+                          .select('rol')
+                          .eq('idUser', session.user.id)
+                          .maybeSingle();
                 
                 if (profile && !error) {
                     userRole.value = profile.rol;

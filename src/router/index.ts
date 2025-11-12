@@ -6,6 +6,7 @@ import {
   CreateToolView,
   ToolDetailView,
   PendingMovementsView,
+  ToolMovementsHistoryView,
   UserRegistrationView,
 } from "../views"; // Ya no es necesario el '/index.ts'
 
@@ -51,6 +52,12 @@ const routes = [
     path: "/movimientos-pendientes",
     name: "MovimientosPendientes",
     component: PendingMovementsView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/historial-movimientos",
+    name: "HistorialMovimientos",
+    component: ToolMovementsHistoryView,
     meta: { requiresAuth: true },
   },
   {

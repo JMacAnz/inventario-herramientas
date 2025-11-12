@@ -108,17 +108,41 @@ export class SupabaseMovementService {
   // C: Leer Movimientos Pendientes
   // =================================================================
   async getPendingMovements() {
+    // First, get the history rows (responsable is stored as an id column)
     const { data, error } = await supabase
       .from(this.HISTORY_TABLE)
-      .select(
-        "*, herramienta:herramientaId(nombre, serial), responsable:responsable(nombre, apellido)"
-      )
+      .select("*, herramienta:herramientaId(nombre, serial), responsable")
       .is("fechaIngreso", null);
 
     if (error)
       throw new Error(
         `Error al obtener movimientos pendientes: ${error.message}`
       );
+
+    // If there are responsables (ids), fetch their profile names and attach
+    if (data && Array.isArray(data) && data.length > 0) {
+      const responsableIds = Array.from(
+        new Set(data.map((d: any) => d.responsable).filter(Boolean))
+      );
+
+      if (responsableIds.length > 0) {
+        const { data: profiles, error: profilesError } = await supabase
+          .from("profiles")
+          .select("idUser, nombre, apellido")
+          .in("idUser", responsableIds as any[]);
+
+        if (!profilesError && profiles) {
+          const map = new Map<string, any>();
+          profiles.forEach((p: any) => map.set(p.idUser, p));
+          data.forEach((d: any) => {
+            d.responsable = map.get(d.responsable) || null;
+          });
+        } else {
+          // If we couldn't fetch profiles, leave responsable as-is (id)
+          console.warn("No se pudieron obtener perfiles de responsables:", profilesError);
+        }
+      }
+    }
 
     return data;
   }
@@ -196,5 +220,45 @@ export class SupabaseMovementService {
         `Error al actualizar la herramienta tras devolución: ${updateToolError.message}`
       );
     }
+  }
+
+  // =================================================================
+  // F: Obtener todos los movimientos (historial completo)
+  // =================================================================
+  async getAllMovements() {
+    // Query history rows without trying to expand the responsable relationship
+    const { data, error } = await supabase
+      .from(this.HISTORY_TABLE)
+      .select("*, herramienta:herramientaId(nombre, serial), responsable")
+      .order("fechaRetiro", { ascending: false });
+
+    if (error)
+      throw new Error(`Error al obtener historial completo: ${error.message}`);
+
+    // If there are responsables (ids), fetch their profile names and attach
+    if (data && Array.isArray(data) && data.length > 0) {
+      const responsableIds = Array.from(
+        new Set(data.map((d: any) => d.responsable).filter(Boolean))
+      );
+
+      if (responsableIds.length > 0) {
+        const { data: profiles, error: profilesError } = await supabase
+          .from("profiles")
+          .select("idUser, nombre, apellido")
+          .in("idUser", responsableIds as any[]);
+
+        if (!profilesError && profiles) {
+          const map = new Map<string, any>();
+          profiles.forEach((p: any) => map.set(p.idUser, p));
+          data.forEach((d: any) => {
+            d.responsable = map.get(d.responsable) || null;
+          });
+        } else {
+          console.warn("No se pudieron obtener perfiles de responsables:", profilesError);
+        }
+      }
+    }
+
+    return data;
   }
 }

@@ -10,6 +10,7 @@ import ToolDetailView from "./tools/ToolDetailView.vue";
 
 // Vistas de Movimientos
 import PendingMovementsView from "./movements/PendingMovementsView.vue";
+import ToolMovementsHistoryView from "./movements/ToolMovementsHistoryView.vue";
 import UserRegistrationView from "./UserRegistrationView.vue";
 
 // Exportar todas las vistas para facilitar su importación
@@ -19,5 +20,6 @@ export {
   CreateToolView,
   ToolDetailView,
   PendingMovementsView,
+  ToolMovementsHistoryView,
   UserRegistrationView,
 };
