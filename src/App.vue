@@ -95,9 +95,10 @@ const checkAuthStatus = async () => {
                 
                 if (profile && !error) {
                     userRole.value = profile.rol;
+                    console.log("Rol del usuario obtenido:", userRole.value);
                 } else {
                     console.error("Error al obtener el rol del usuario:", error);
-                    userRole.value = null;
+                    userRole.value = "Empleado";
                 }
             }
         } catch (e) {
